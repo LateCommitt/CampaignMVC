@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace DataAccessLayer.Abstract
 {
-    public interface ICampaignDal : IGenericDal<EntityLayer.Concrete.Campaign>
+     public interface ICampaignDal : IGenericDal<EntityLayer.Concrete.Campaign>
     {
     }
 }

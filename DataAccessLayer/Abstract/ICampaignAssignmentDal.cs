@@ -6,7 +6,8 @@ using System.Threading.Tasks;
 
 namespace DataAccessLayer.Abstract
 {
-    public interface ICampaignAssignmentDal : IGenericDal<EntityLayer.Concrete.CampaignAssignment>
+   public interface ICampaignAssignmentDal : IGenericDal<EntityLayer.Concrete.CampaignAssignment>
     {
+        List<EntityLayer.Concrete.CampaignAssignment> GetListAll();
     }
 }
