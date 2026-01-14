@@ -3,10 +3,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using EntityLayer.Concrete;
 
 namespace DataAccessLayer.Abstract
 {
-   public interface ICampaignAssignmentDal : IGenericDal<EntityLayer.Concrete.CampaignAssignment>
+    public interface ICampaignAssignmentDal : IGenericDal<EntityLayer.Concrete.CampaignAssignment>
     {
+        List<CampaignAssignment> GetAllList();
     }
 }

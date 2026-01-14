@@ -17,6 +17,12 @@ namespace BusinessLayer.Managers
         {
             _campaignAssignmentDal = campaignAssignmentDal;
         }
+
+        public List<CampaignAssignment> GetAllList()
+        {
+            return _campaignAssignmentDal.GetAllList();
+        }
+
         public List<CampaignAssignment> GetList()
         {
             throw new NotImplementedException();
@@ -24,22 +30,22 @@ namespace BusinessLayer.Managers
 
         public void TAdd(CampaignAssignment t)
         {
-            throw new NotImplementedException();
+            _campaignAssignmentDal.Insert(t);
         }
 
         public void TDelete(CampaignAssignment t)
         {
-            throw new NotImplementedException();
+            _campaignAssignmentDal.Delete(t);
         }
 
         public CampaignAssignment TGetById(int id)
         {
-            throw new NotImplementedException();
+            return _campaignAssignmentDal.GetById(id);
         }
 
         public void TUpdate(CampaignAssignment t)
         {
-            throw new NotImplementedException();
+            _campaignAssignmentDal.Update(t);
         }
     }
 }
