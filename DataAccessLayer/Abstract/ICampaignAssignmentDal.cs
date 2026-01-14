@@ -8,6 +8,5 @@ namespace DataAccessLayer.Abstract
 {
    public interface ICampaignAssignmentDal : IGenericDal<EntityLayer.Concrete.CampaignAssignment>
     {
-        List<EntityLayer.Concrete.CampaignAssignment> GetListAll();
     }
 }

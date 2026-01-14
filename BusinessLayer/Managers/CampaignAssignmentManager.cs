@@ -19,7 +19,7 @@ namespace BusinessLayer.Managers
         }
         public List<CampaignAssignment> GetList()
         {
-            return _campaignAssignmentDal.GetListAll();
+            throw new NotImplementedException();
         }
 
         public void TAdd(CampaignAssignment t)

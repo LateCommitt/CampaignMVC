@@ -12,7 +12,7 @@ namespace DataAccessLayer.Concrete
     {
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            optionsBuilder.UseSqlServer("server=ALI-LAPTOP\\SQLEXPRESS;database=CampaingDB;integrated security=True;TrustServerCertificate=True");
+            optionsBuilder.UseSqlServer("server=DESKTOP-J4RS4FL;database=CampaingDB;integrated security=True;TrustServerCertificate=True");
         }
 
         public DbSet<EntityLayer.Concrete.Campaign> Campaigns { get; set; }
