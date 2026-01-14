@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace DataAccessLayer.Abstract
 {
-    interface IUserMetricDal : IGenericDal<EntityLayer.Concrete.UserMetrics>
+    public interface IUserMetricDal : IGenericDal<EntityLayer.Concrete.UserMetrics>
     {
     }
 }

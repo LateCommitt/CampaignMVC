@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace DataAccessLayer.Abstract
 {
-    public interface IUserDal : IGenericDal<EntityLayer.Concrete.User>
+    interface INotificationDal : IGenericDal<EntityLayer.Concrete.Notification>
     {
     }
 }
