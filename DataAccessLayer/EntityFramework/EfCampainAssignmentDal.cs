@@ -1,4 +1,5 @@
 ﻿using DataAccessLayer.Abstract;
+using DataAccessLayer.Concrete;
 using DataAccessLayer.Repository;
 using System;
 using System.Collections.Generic;
@@ -10,5 +11,13 @@ namespace DataAccessLayer.EntityFramework
 {
     class EfCampainAssignmentDal : GenericRepository<EntityLayer.Concrete.CampaignAssignment>, ICampaignAssignmentDal
     {
+        public void CalculateScore()
+        {
+            using var c = new CampContext()
+            {
+                
+            };
+
+        }
     }
 }
