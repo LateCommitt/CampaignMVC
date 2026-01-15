@@ -1,8 +1,93 @@
 ﻿@{
-    ViewData["Title"] = "Home Page";
+    ViewData["Title"] = "Dashboard";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+<div class="container-fluid">
+    <h1 class="mb-4">Turkcell Kampanya Optimizer - Dashboard</h1>
+
+    <div class="row mb-4">
+        <div class="col-md-3">
+            <div class="card text-white bg-primary">
+                <div class="card-body">
+                    <h5 class="card-title">Aktif Kampanyalar</h5>
+                    <h2 class="card-text">@ViewBag.ActiveCampaigns</h2>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card text-white bg-success">
+                <div class="card-body">
+                    <h5 class="card-title">Toplam Atama</h5>
+                    <h2 class="card-text">@ViewBag.TotalAssignments</h2>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card text-white bg-info">
+                <div class="card-body">
+                    <h5 class="card-title">Kullanılan Kampanyalar</h5>
+                    <h2 class="card-text">@ViewBag.UsedCampaigns</h2>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card text-white bg-warning">
+                <div class="card-body">
+                    <h5 class="card-title">Kullanım Oranı</h5>
+                    <h2 class="card-text">@ViewBag.UsageRate.ToString("F2")%</h2>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <h5>Günlük Kampanya Dağılımı</h5>
+                </div>
+                <div class="card-body">
+                    @{
+                        var dailyAssignments = ViewBag.DailyAssignments as List<DailyAssignmentInfo>;
+                    }
+                    @if (dailyAssignments != null && dailyAssignments.Count > 0)
+                    {
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Kampanya ID</th>
+                                    <th>Atama Sayısı</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var item in dailyAssignments)
+                                {
+                                    <tr>
+                                        <td>@item.CampaignId</td>
+                                        <td>@item.Count</td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    }
+                    else
+                    {
+                        <p>Bugün için kampanya ataması bulunmamaktadır.</p>
+                    }
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <h5>Hızlı İşlemler</h5>
+                </div>
+                <div class="card-body">
+                    <a asp-controller="Campaign" asp-action="Create" class="btn btn-primary mb-2">Yeni Kampanya Ekle</a><br />
+                    <a asp-controller="User" asp-action="Create" class="btn btn-success mb-2">Yeni Kullanıcı Ekle</a><br />
+                    <a asp-controller="CampaignAssignment" asp-action="Statistics" class="btn btn-info">Detaylı İstatistikler</a>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>

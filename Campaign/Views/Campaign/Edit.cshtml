@@ -1,0 +1,56 @@
+@model EntityLayer.Concrete.Campaign
+@{
+    ViewData["Title"] = "Kampanya Düzenle";
+}
+
+<div class="container">
+    <h1>Kampanya Düzenle</h1>
+
+    <form asp-action="Edit" method="post">
+        <input type="hidden" asp-for="Id" />
+
+        <div class="form-group mb-3">
+            <label asp-for="Type">Kampanya Tipi</label>
+            <select asp-for="Type" class="form-control" asp-items="ViewBag.CampaignTypes"></select>
+            <span asp-validation-for="Type" class="text-danger"></span>
+        </div>
+
+        <div class="form-group mb-3">
+            <label asp-for="TargetSegment">Hedef Segment</label>
+            <select asp-for="TargetSegment" class="form-control" asp-items="ViewBag.Segments"></select>
+            <span asp-validation-for="TargetSegment" class="text-danger"></span>
+        </div>
+
+        <div class="form-group mb-3">
+            <label asp-for="Priority">Öncelik</label>
+            <input asp-for="Priority" class="form-control" type="number" min="1" />
+            <span asp-validation-for="Priority" class="text-danger"></span>
+        </div>
+
+        <div class="form-group mb-3">
+            <label asp-for="StartDate">Başlangıç Tarihi</label>
+            <input asp-for="StartDate" class="form-control" type="date" />
+            <span asp-validation-for="StartDate" class="text-danger"></span>
+        </div>
+
+        <div class="form-group mb-3">
+            <label asp-for="EndDate">Bitiş Tarihi</label>
+            <input asp-for="EndDate" class="form-control" type="date" />
+            <span asp-validation-for="EndDate" class="text-danger"></span>
+        </div>
+
+        <div class="form-group mb-3">
+            <div class="form-check">
+                <input asp-for="IsActive" class="form-check-input" type="checkbox" />
+                <label asp-for="IsActive" class="form-check-label">Aktif</label>
+            </div>
+        </div>
+
+        <button type="submit" class="btn btn-primary">Güncelle</button>
+        <a asp-action="Index" class="btn btn-secondary">İptal</a>
+    </form>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

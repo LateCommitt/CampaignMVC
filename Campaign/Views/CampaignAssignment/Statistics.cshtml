@@ -1,0 +1,90 @@
+@{
+    ViewData["Title"] = "İstatistikler";
+    var statusCounts = ViewBag.StatusCounts as List<dynamic>;
+    var campaignUsage = ViewBag.CampaignUsage as List<dynamic>;
+}
+
+<div class="container-fluid">
+    <h1 class="mb-4">Kampanya İstatistikleri</h1>
+
+    <div class="row mb-4">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5>Durum Dağılımı</h5>
+                </div>
+                <div class="card-body">
+                    @if (statusCounts != null && statusCounts.Count > 0)
+                    {
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Durum</th>
+                                    <th>Sayı</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var item in statusCounts)
+                                {
+                                    <tr>
+                                        <td>@item.Status</td>
+                                        <td>@item.Count</td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    }
+                    else
+                    {
+                        <p>Veri bulunmamaktadır.</p>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5>Kampanya Kullanım Oranları</h5>
+                </div>
+                <div class="card-body">
+                    @if (campaignUsage != null && campaignUsage.Count > 0)
+                    {
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Kampanya ID</th>
+                                    <th>Toplam Atama</th>
+                                    <th>Kullanılan</th>
+                                    <th>Kullanım Oranı</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var item in campaignUsage)
+                                {
+                                    var usageRate = item.Total > 0 ? (double)item.Used / item.Total * 100 : 0;
+                                    <tr>
+                                        <td>@item.CampaignId</td>
+                                        <td>@item.Total</td>
+                                        <td>@item.Used</td>
+                                        <td>@usageRate.ToString("F2")%</td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    }
+                    else
+                    {
+                        <p>Veri bulunmamaktadır.</p>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="mt-3">
+        <a asp-action="Index" class="btn btn-secondary">Geri Dön</a>
+    </div>
+</div>

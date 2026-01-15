@@ -1,0 +1,107 @@
+@model EntityLayer.Concrete.User
+@{
+    ViewData["Title"] = "Kullanıcı Detayları";
+    var metrics = ViewBag.Metrics as EntityLayer.Concrete.UserMetrics;
+    var assignments = ViewBag.Assignments as List<EntityLayer.Concrete.CampaignAssignment>;
+}
+
+<div class="container">
+    <h1>Kullanıcı Detayları</h1>
+
+    <div class="row">
+        <div class="col-md-6">
+            <div class="card mb-3">
+                <div class="card-header">
+                    <h5>Kullanıcı Bilgileri</h5>
+                </div>
+                <div class="card-body">
+                    <dl class="row">
+                        <dt class="col-sm-4">ID:</dt>
+                        <dd class="col-sm-8">@Model.Id</dd>
+
+                        <dt class="col-sm-4">Ad:</dt>
+                        <dd class="col-sm-8">@Model.Name</dd>
+
+                        <dt class="col-sm-4">Email:</dt>
+                        <dd class="col-sm-8">@Model.Email</dd>
+
+                        <dt class="col-sm-4">Şehir:</dt>
+                        <dd class="col-sm-8">@Model.City</dd>
+
+                        <dt class="col-sm-4">Segment:</dt>
+                        <dd class="col-sm-8">@Model.Segment</dd>
+                    </dl>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6">
+            <div class="card mb-3">
+                <div class="card-header">
+                    <h5>Kullanıcı Metrikleri</h5>
+                </div>
+                <div class="card-body">
+                    @if (metrics != null)
+                    {
+                        <dl class="row">
+                            <dt class="col-sm-6">Aylık Veri (GB):</dt>
+                            <dd class="col-sm-6">@metrics.MonthlyDataGb</dd>
+
+                            <dt class="col-sm-6">Aylık Harcama (TL):</dt>
+                            <dd class="col-sm-6">@metrics.MonthlySpendTry</dd>
+
+                            <dt class="col-sm-6">Sadakat Yılı:</dt>
+                            <dd class="col-sm-6">@metrics.LoyaltyYears</dd>
+                        </dl>
+                    }
+                    else
+                    {
+                        <p>Kullanıcı metrikleri bulunmamaktadır.</p>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card mb-3">
+        <div class="card-header d-flex justify-content-between align-items-center">
+            <h5>Kampanya Atamaları</h5>
+            <form asp-action="AssignCampaign" asp-route-userId="@Model.Id" method="post" style="display:inline;">
+                <button type="submit" class="btn btn-primary btn-sm">Kampanya Ata</button>
+            </form>
+        </div>
+        <div class="card-body">
+            @if (assignments != null && assignments.Any())
+            {
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Kampanya ID</th>
+                            <th>Skor</th>
+                            <th>Durum</th>
+                            <th>Atama Tarihi</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var assignment in assignments)
+                        {
+                            <tr>
+                                <td>@assignment.CampaignId</td>
+                                <td>@assignment.Score</td>
+                                <td>@assignment.Status</td>
+                                <td>@assignment.AssignedAt.ToString("dd.MM.yyyy HH:mm")</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            }
+            else
+            {
+                <p>Bu kullanıcı için kampanya ataması bulunmamaktadır.</p>
+            }
+        </div>
+    </div>
+
+    <a asp-action="Index" class="btn btn-secondary">Geri Dön</a>
+    <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-warning">Düzenle</a>
+</div>
