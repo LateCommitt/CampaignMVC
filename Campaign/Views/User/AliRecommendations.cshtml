@@ -1,0 +1,255 @@
+@model EntityLayer.Concrete.User
+@{
+    ViewData["Title"] = "Ali - Önerilen Kampanyalar";
+    var metrics = ViewBag.Metrics as EntityLayer.Concrete.UserMetrics;
+    var assignments = ViewBag.Assignments as List<EntityLayer.Concrete.CampaignAssignment>;
+    var scoreBreakdown = ViewBag.ScoreBreakdown as UserScoreBreakdown;
+    var recommendations = ViewBag.Recommendations as List<CampaignRecommendation>;
+}
+
+<div class="container-fluid">
+    <div class="row mb-4">
+        <div class="col-md-12">
+            <div class="card bg-primary text-white">
+                <div class="card-body">
+                    <h1 class="mb-0">👤 @Model.Name - Skor Hesaplama ve Kampanya Önerileri</h1>
+                    <p class="mb-0">Formül ile hesaplanmış kullanıcı bazlı kişiselleştirilmiş kampanya önerileri</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row mb-4">
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-header bg-info text-white">
+                    <h5>Kullanıcı Bilgileri</h5>
+                </div>
+                <div class="card-body">
+                    <dl class="row mb-0">
+                        <dt class="col-sm-5">Ad:</dt>
+                        <dd class="col-sm-7"><strong>@Model.Name</strong></dd>
+                        <dt class="col-sm-5">Email:</dt>
+                        <dd class="col-sm-7">@Model.Email</dd>
+                        <dt class="col-sm-5">Şehir:</dt>
+                        <dd class="col-sm-7">@Model.City</dd>
+                        <dt class="col-sm-5">Segment:</dt>
+                        <dd class="col-sm-7"><span class="badge bg-warning">@Model.Segment</span></dd>
+                    </dl>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-header bg-success text-white">
+                    <h5>Kullanım Metrikleri</h5>
+                </div>
+                <div class="card-body">
+                    @if (metrics != null)
+                    {
+                        <dl class="row mb-0">
+                            <dt class="col-sm-6">Aylık Veri:</dt>
+                            <dd class="col-sm-6"><strong>@metrics.MonthlyDataGb GB</strong></dd>
+                            <dt class="col-sm-6">Aylık Harcama:</dt>
+                            <dd class="col-sm-6"><strong>@metrics.MonthlySpendTry TL</strong></dd>
+                            <dt class="col-sm-6">Sadakat:</dt>
+                            <dd class="col-sm-6"><strong>@metrics.LoyaltyYears Yıl</strong></dd>
+                        </dl>
+                    }
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-header bg-warning text-dark">
+                    <h5>Toplam Skor</h5>
+                </div>
+                <div class="card-body text-center">
+                    @if (scoreBreakdown != null)
+                    {
+                        <h1 class="display-4 text-primary mb-0">@scoreBreakdown.TotalScore</h1>
+                        <p class="text-muted mb-0">/ 100</p>
+                        <div class="progress mt-2">
+                            <div class="progress-bar bg-primary" role="progressbar" style="width: @scoreBreakdown.TotalScore%">@scoreBreakdown.TotalScore%</div>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+
+    @if (assignments != null && assignments.Any())
+    {
+        <div class="card mb-4">
+            <div class="card-header bg-secondary text-white">
+                <h5>Mevcut Kampanyalar</h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    @foreach (var assignment in assignments)
+                    {
+                        <div class="col-md-4 mb-3">
+                            <div class="card border-secondary">
+                                <div class="card-body">
+                                    <h6 class="card-title">Kampanya @assignment.CampaignId</h6>
+                                    <p class="mb-1"><strong>Skor:</strong> <span class="badge bg-primary">@assignment.Score</span></p>
+                                    <p class="mb-1"><strong>Durum:</strong> <span class="badge bg-success">@assignment.Status</span></p>
+                                    <p class="mb-0 text-muted small">@assignment.AssignedAt.ToString("dd.MM.yyyy HH:mm")</p>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    }
+
+    @if (scoreBreakdown != null)
+    {
+        <div class="card mb-4">
+            <div class="card-header bg-info text-white">
+                <h5>📊 Skor Hesaplama Detayları (Formül ile Hesaplanmış)</h5>
+            </div>
+            <div class="card-body">
+                <div class="alert alert-info">
+                    <strong>Hesaplama Formülü:</strong> Toplam Skor = Kullanım Skoru (0-40) + Harcama Skoru (0-35) + Sadakat Skoru (0-25)
+                </div>
+                <div class="row">
+                    <div class="col-md-4">
+                        <h6>Kullanım Skoru: @scoreBreakdown.UsageScore / 40</h6>
+                        @if (metrics != null)
+                        {
+                            <p class="text-muted small">
+                                @if (metrics.MonthlyDataGb >= 100)
+                                {<text>100+ GB → 40 puan</text>}
+                                else if (metrics.MonthlyDataGb >= 50)
+                                {<text>50-99 GB → 30 puan</text>}
+                                else if (metrics.MonthlyDataGb >= 30)
+                                {<text>30-49 GB → 20 puan</text>}
+                                else if (metrics.MonthlyDataGb >= 15)
+                                {<text>15-29 GB → 10 puan</text>}
+                                else
+                                {<text>15 GB altı → 5 puan</text>}
+                            </p>
+                        }
+                        <div class="progress mb-3">
+                            <div class="progress-bar bg-primary" style="width: @((scoreBreakdown.UsageScore / 40.0) * 100)%">@scoreBreakdown.UsageScore</div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <h6>Harcama Skoru: @scoreBreakdown.SpendScore / 35</h6>
+                        @if (metrics != null)
+                        {
+                            <p class="text-muted small">
+                                @if (metrics.MonthlySpendTry >= 400)
+                                {<text>400+ TL → 35 puan</text>}
+                                else if (metrics.MonthlySpendTry >= 250)
+                                {<text>250-399 TL → 25 puan</text>}
+                                else if (metrics.MonthlySpendTry >= 150)
+                                {<text>150-249 TL → 15 puan</text>}
+                                else if (metrics.MonthlySpendTry >= 80)
+                                {<text>80-149 TL → 10 puan</text>}
+                                else
+                                {<text>80 TL altı → 5 puan</text>}
+                            </p>
+                        }
+                        <div class="progress mb-3">
+                            <div class="progress-bar bg-success" style="width: @((scoreBreakdown.SpendScore / 35.0) * 100)%">@scoreBreakdown.SpendScore</div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <h6>Sadakat Skoru: @scoreBreakdown.LoyaltyScore / 25</h6>
+                        @if (metrics != null)
+                        {
+                            <p class="text-muted small">
+                                @if (metrics.LoyaltyYears >= 7)
+                                {<text>7+ yıl → 25 puan</text>}
+                                else if (metrics.LoyaltyYears >= 5)
+                                {<text>5-6 yıl → 20 puan</text>}
+                                else if (metrics.LoyaltyYears >= 3)
+                                {<text>3-4 yıl → 15 puan</text>}
+                                else if (metrics.LoyaltyYears >= 1)
+                                {<text>1-2 yıl → 10 puan</text>}
+                                else
+                                {<text>1 yıl altı → 5 puan</text>}
+                            </p>
+                        }
+                        <div class="progress mb-3">
+                            <div class="progress-bar bg-warning" style="width: @((scoreBreakdown.LoyaltyScore / 25.0) * 100)%">@scoreBreakdown.LoyaltyScore</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="alert alert-success mt-3 mb-0">
+                    <strong>Toplam Skor:</strong> @scoreBreakdown.TotalScore / 100 | <strong>Öneri:</strong> @scoreBreakdown.Recommendation
+                </div>
+            </div>
+        </div>
+    }
+
+    <div class="card">
+        <div class="card-header bg-danger text-white">
+            <h5>📋 Önerilen Kampanyalar</h5>
+        </div>
+        <div class="card-body">
+            @if (recommendations != null && recommendations.Any())
+            {
+                <div class="row">
+                    @foreach (var rec in recommendations)
+                    {
+                        <div class="col-md-4 mb-4">
+                            <div class="card h-100 border-danger shadow-sm">
+                                <div class="card-header bg-light">
+                                    <h5 class="mb-0">🎯 Kampanya @rec.Campaign.Id</h5>
+                                </div>
+                                <div class="card-body">
+                                    <p class="mb-2"><strong>Tip:</strong> <span class="badge bg-info">@rec.Campaign.Type</span></p>
+                                    <p class="mb-2"><strong>Hedef Segment:</strong> <span class="badge bg-secondary">@rec.Campaign.TargetSegment</span></p>
+                                    <p class="mb-2"><strong>Öncelik:</strong> <span class="badge bg-warning">@rec.Campaign.Priority</span></p>
+                                    
+                                    <hr>
+                                    
+                                    <p class="mb-2"><strong>Uyum Oranı:</strong></p>
+                                    <div class="progress mb-3" style="height: 25px;">
+                                        <div class="progress-bar bg-danger progress-bar-striped progress-bar-animated" 
+                                             role="progressbar" 
+                                             style="width: @rec.MatchPercentage%">
+                                            <strong>@rec.MatchPercentage.ToString("F1")%</strong>
+                                        </div>
+                                    </div>
+                                    
+                                    <p class="mb-2"><strong>Kampanya Skoru:</strong> <span class="badge bg-primary" style="font-size: 1.1em;">@rec.Score</span></p>
+                                    
+                                    <div class="alert alert-light mb-0">
+                                        <small><strong>💡 Öneri Nedeni:</strong><br>@rec.Reason</small>
+                                    </div>
+                                </div>
+                                <div class="card-footer bg-light text-center">
+                                    <small class="text-muted">
+                                        @rec.Campaign.StartDate.ToString("dd.MM.yyyy") - @rec.Campaign.EndDate.ToString("dd.MM.yyyy")
+                                    </small>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </div>
+            }
+            else
+            {
+                <div class="alert alert-warning">
+                    <h5>⚠️ Önerilen kampanya bulunamadı</h5>
+                    <p>Bu kullanıcı için aktif kampanya bulunmamaktadır.</p>
+                </div>
+            }
+        </div>
+    </div>
+
+    <div class="mt-4 text-center">
+        <a asp-action="Index" class="btn btn-secondary">Kullanıcı Listesine Dön</a>
+        @if (Model != null)
+        {
+            <a asp-action="Details" asp-route-id="@Model.Id" class="btn btn-primary">Detaylı Görünüm</a>
+        }
+    </div>
+</div>

@@ -9,6 +9,32 @@
         <a asp-action="Create" class="btn btn-primary">Yeni Kullanıcı Ekle</a>
     </div>
 
+    <div class="card mb-4">
+        <div class="card-header">
+            <h5>Hızlı Kullanıcı Oluştur</h5>
+        </div>
+        <div class="card-body">
+            <form id="quickUserForm" onsubmit="createQuickUser(event)">
+                <div class="row">
+                    <div class="col-md-3">
+                        <input type="text" id="quickUserName" class="form-control" placeholder="Kullanıcı Adı" required />
+                    </div>
+                    <div class="col-md-3">
+                        <select id="quickUserSegment" class="form-control" required>
+                            <option value="">Segment Seçin</option>
+                            <option value="HIGH_USAGE">Yüksek Kullanım</option>
+                            <option value="MEDIUM_USAGE">Orta Kullanım</option>
+                            <option value="LOW_USAGE">Düşük Kullanım</option>
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <button type="submit" class="btn btn-success">Hızlı Oluştur ve Skor Hesapla</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
     <table class="table table-striped">
         <thead>
             <tr>
@@ -32,9 +58,45 @@
                     <td>
                         <a asp-action="Details" asp-route-id="@user.Id" class="btn btn-sm btn-info">Detaylar</a>
                         <a asp-action="Edit" asp-route-id="@user.Id" class="btn btn-sm btn-warning">Düzenle</a>
+                        <a asp-action="UserRecommendations" asp-route-id="@user.Id" class="btn btn-sm btn-success">Skor Hesapla & Öneriler</a>
                     </td>
                 </tr>
             }
         </tbody>
     </table>
 </div>
+
+@section Scripts {
+    <script>
+        function createQuickUser(event) {
+            event.preventDefault();
+            
+            const name = document.getElementById('quickUserName').value;
+            const segment = document.getElementById('quickUserSegment').value;
+            
+            if (!name || !segment) {
+                alert('Lütfen tüm alanları doldurun!');
+                return;
+            }
+            
+            fetch('/User/CreateQuickUser', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ name: name, segment: segment })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    window.location.href = '/User/ScoreDetails/' + data.userId;
+                } else {
+                    alert('Hata: ' + data.message);
+                }
+            })
+            .catch(error => {
+                alert('Hata: ' + error.message);
+            });
+        }
+    </script>
+}

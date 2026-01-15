@@ -66,9 +66,10 @@
     <div class="card mb-3">
         <div class="card-header d-flex justify-content-between align-items-center">
             <h5>Kampanya Atamaları</h5>
-            <form asp-action="AssignCampaign" asp-route-userId="@Model.Id" method="post" style="display:inline;">
-                <button type="submit" class="btn btn-primary btn-sm">Kampanya Ata</button>
-            </form>
+            <button type="button" id="processScoreBtn" class="btn btn-primary btn-sm" onclick="processUserScore(@Model.Id)">
+                <span id="processScoreText">Skor Hesapla ve Kampanya Ata</span>
+                <span id="processScoreSpinner" class="spinner-border spinner-border-sm d-none" role="status" aria-hidden="true"></span>
+            </button>
         </div>
         <div class="card-body">
             @if (assignments != null && assignments.Any())
@@ -105,6 +106,74 @@
     <div class="mt-3">
         <a asp-action="Index" class="btn btn-secondary">Geri Dön</a>
         <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-warning">Düzenle</a>
-        <a asp-controller="MockData" asp-action="UserRecommendations" asp-route-userId="@Model.Id" class="btn btn-info">Kampanya Önerileri</a>
+        <a asp-action="UserRecommendations" asp-route-id="@Model.Id" class="btn btn-success">Skor Hesapla & Kampanya Önerileri</a>
     </div>
 </div>
+
+<div id="scoreResult" class="alert d-none mt-3"></div>
+
+@section Scripts {
+    <script>
+        function processUserScore(userId) {
+            const btn = document.getElementById('processScoreBtn');
+            const text = document.getElementById('processScoreText');
+            const spinner = document.getElementById('processScoreSpinner');
+            const resultDiv = document.getElementById('scoreResult');
+            
+            // Processing durumunu göster
+            btn.disabled = true;
+            text.textContent = 'İşleniyor...';
+            spinner.classList.remove('d-none');
+            resultDiv.classList.add('d-none');
+            
+            // AJAX çağrısı
+            fetch('/User/ProcessUserScore', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'RequestVerificationToken': document.querySelector('input[name="__RequestVerificationToken"]')?.value || ''
+                },
+                body: JSON.stringify({ userId: userId })
+            })
+            .then(response => response.json())
+            .then(data => {
+                // Başarılı
+                if (data.success) {
+                    resultDiv.className = 'alert alert-success mt-3';
+                    resultDiv.innerHTML = `
+                        <h5>✓ İşlem Tamamlandı!</h5>
+                        <p>${data.message}</p>
+                        <hr>
+                        <p><strong>Toplam Skor:</strong> ${data.score} / 100</p>
+                        <p><strong>Kullanım Skoru:</strong> ${data.usageScore}</p>
+                        <p><strong>Harcama Skoru:</strong> ${data.spendScore}</p>
+                        <p><strong>Sadakat Skoru:</strong> ${data.loyaltyScore}</p>
+                        <p class="mb-0"><small>Sayfa 2 saniye içinde yenilenecek...</small></p>
+                    `;
+                    resultDiv.classList.remove('d-none');
+                    
+                    // 2 saniye sonra sayfayı yenile
+                    setTimeout(() => {
+                        window.location.reload();
+                    }, 2000);
+                } else {
+                    // Hata
+                    resultDiv.className = 'alert alert-danger mt-3';
+                    resultDiv.innerHTML = `<strong>Hata:</strong> ${data.message}`;
+                    resultDiv.classList.remove('d-none');
+                }
+            })
+            .catch(error => {
+                resultDiv.className = 'alert alert-danger mt-3';
+                resultDiv.innerHTML = `<strong>Hata:</strong> ${error.message}`;
+                resultDiv.classList.remove('d-none');
+            })
+            .finally(() => {
+                // Butonu tekrar aktif et
+                btn.disabled = false;
+                text.textContent = 'Skor Hesapla ve Kampanya Ata';
+                spinner.classList.add('d-none');
+            });
+        }
+    </script>
+}
