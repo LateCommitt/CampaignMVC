@@ -2,6 +2,8 @@ using BusinessLayer.Abstract;
 using EntityLayer.Concrete;
 using EntityLayer.Enums;
 using Microsoft.AspNetCore.Mvc;
+using Campaign.Models;
+using System.Linq;
 
 namespace Campaign.Controllers
 {
@@ -40,12 +42,12 @@ namespace Campaign.Controllers
             
             var statusCounts = assignments
                 .GroupBy(a => a.Status)
-                .Select(g => new { Status = g.Key, Count = g.Count() })
+                .Select(g => new StatusCountInfo { Status = g.Key, Count = g.Count() })
                 .ToList();
 
             var campaignUsage = assignments
                 .GroupBy(a => a.CampaignId)
-                .Select(g => new 
+                .Select(g => new CampaignUsageInfo
                 { 
                     CampaignId = g.Key,
                     Campaign = _campaignService.TGetById(g.Key),

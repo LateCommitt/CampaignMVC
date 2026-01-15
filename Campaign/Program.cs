@@ -21,6 +21,8 @@ builder.Services.AddScoped<IUserService, UserManager>();
 builder.Services.AddScoped<ICampaignAssignmentService, CampaignAssignmentManager>();
 builder.Services.AddScoped<IUserMetricsService, UserMetricsManager>();
 builder.Services.AddScoped<INotifiticationService, NotificationManager>();
+builder.Services.AddScoped<IMockDataService, MockDataManager>();
+builder.Services.AddScoped<ICampaignRecommendationService, CampaignRecommendationManager>();
 
 var app = builder.Build();
 

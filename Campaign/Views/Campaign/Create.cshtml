@@ -6,7 +6,20 @@
 <div class="container">
     <h1>Yeni Kampanya Ekle</h1>
 
-    <form asp-action="Create" method="post">
+    @if (!ViewData.ModelState.IsValid)
+    {
+        <div class="alert alert-danger">
+            <h4>Lütfen aşağıdaki hataları düzeltin:</h4>
+            <ul>
+                @foreach (var error in ViewData.ModelState.Values.SelectMany(v => v.Errors))
+                {
+                    <li>@error.ErrorMessage</li>
+                }
+            </ul>
+        </div>
+    }
+
+    <form asp-action="Create" method="post" asp-antiforgery="true">
         <div class="form-group mb-3">
             <label asp-for="Type">Kampanya Tipi</label>
             <select asp-for="Type" class="form-control" asp-items="ViewBag.CampaignTypes"></select>

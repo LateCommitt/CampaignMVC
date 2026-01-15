@@ -1,0 +1,105 @@
+@{
+    ViewData["Title"] = "Kampanya Önerileri";
+    var recommendations = ViewBag.Recommendations as List<CampaignRecommendation>;
+    var scoreBreakdown = ViewBag.ScoreBreakdown as UserScoreBreakdown;
+}
+
+<div class="container-fluid">
+    <h1 class="mb-4">Kampanya Önerileri</h1>
+
+    @if (scoreBreakdown != null)
+    {
+        <div class="row mb-4">
+            <div class="col-md-12">
+                <div class="card">
+                    <div class="card-header">
+                        <h5>Kullanıcı Skor Analizi</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-3">
+                                <strong>Toplam Skor:</strong> @scoreBreakdown.TotalScore / 100
+                            </div>
+                            <div class="col-md-3">
+                                <strong>Kullanım Skoru:</strong> @scoreBreakdown.UsageScore
+                            </div>
+                            <div class="col-md-3">
+                                <strong>Harcama Skoru:</strong> @scoreBreakdown.SpendScore
+                            </div>
+                            <div class="col-md-3">
+                                <strong>Sadakat Skoru:</strong> @scoreBreakdown.LoyaltyScore
+                            </div>
+                        </div>
+                        <hr />
+                        <div class="row">
+                            <div class="col-md-6">
+                                <strong>Segment:</strong> @scoreBreakdown.Segment
+                            </div>
+                            <div class="col-md-6">
+                                <strong>Öneri:</strong> @scoreBreakdown.Recommendation
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5>Önerilen Kampanyalar</h5>
+                </div>
+                <div class="card-body">
+                    @if (recommendations != null && recommendations.Any())
+                    {
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Kampanya ID</th>
+                                    <th>Tip</th>
+                                    <th>Hedef Segment</th>
+                                    <th>Öncelik</th>
+                                    <th>Skor</th>
+                                    <th>Uyum Oranı</th>
+                                    <th>Neden</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var rec in recommendations)
+                                {
+                                    <tr>
+                                        <td>@rec.Campaign.Id</td>
+                                        <td>@rec.Campaign.Type</td>
+                                        <td>@rec.Campaign.TargetSegment</td>
+                                        <td>@rec.Campaign.Priority</td>
+                                        <td>
+                                            <span class="badge bg-primary">@rec.Score</span>
+                                        </td>
+                                        <td>
+                                            <div class="progress" style="height: 20px;">
+                                                <div class="progress-bar" role="progressbar" 
+                                                     style="width: @rec.MatchPercentage%" 
+                                                     aria-valuenow="@rec.MatchPercentage" 
+                                                     aria-valuemin="0" 
+                                                     aria-valuemax="100">
+                                                    @rec.MatchPercentage.ToString("F1")%
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td>@rec.Reason</td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    }
+                    else
+                    {
+                        <p>Önerilen kampanya bulunamadı.</p>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

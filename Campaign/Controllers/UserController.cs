@@ -3,6 +3,7 @@ using EntityLayer.Concrete;
 using EntityLayer.Enums;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using System.Linq;
 
 namespace Campaign.Controllers
 {

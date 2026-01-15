@@ -2,6 +2,7 @@ using System.Diagnostics;
 using Campaign.Models;
 using BusinessLayer.Abstract;
 using Microsoft.AspNetCore.Mvc;
+using System.Linq;
 
 namespace Campaign.Controllers
 {

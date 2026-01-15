@@ -3,6 +3,8 @@ using EntityLayer.Concrete;
 using EntityLayer.Enums;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using System;
+using System.Linq;
 
 namespace Campaign.Controllers
 {
@@ -43,31 +45,92 @@ namespace Campaign.Controllers
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public IActionResult Create(EntityLayer.Concrete.Campaign campaign)
         {
-            if (ModelState.IsValid)
+            // Enum binding sorununu düzelt - Request.Form'dan direkt al
+            if (Request.Form.ContainsKey("Type"))
+            {
+                var typeValue = Request.Form["Type"].ToString();
+                if (Enum.TryParse<CampaignType>(typeValue, out var parsedType))
+                {
+                    campaign.Type = parsedType;
+                    ModelState.Remove("Type");
+                    ModelState.SetModelValue("Type", new Microsoft.AspNetCore.Mvc.ModelBinding.ValueProviderResult(typeValue));
+                }
+            }
+
+            if (Request.Form.ContainsKey("TargetSegment"))
+            {
+                var segmentValue = Request.Form["TargetSegment"].ToString();
+                if (Enum.TryParse<Segment>(segmentValue, out var parsedSegment))
+                {
+                    campaign.TargetSegment = parsedSegment;
+                    ModelState.Remove("TargetSegment");
+                    ModelState.SetModelValue("TargetSegment", new Microsoft.AspNetCore.Mvc.ModelBinding.ValueProviderResult(segmentValue));
+                }
+            }
+
+            // ModelState hatalarını kontrol et
+            if (!ModelState.IsValid)
+            {
+                // Hataları logla
+                foreach (var error in ModelState)
+                {
+                    foreach (var errorMessage in error.Value.Errors)
+                    {
+                        // Debug için hataları görebilirsiniz
+                        System.Diagnostics.Debug.WriteLine($"Key: {error.Key}, Error: {errorMessage.ErrorMessage}");
+                    }
+                }
+
+                ViewBag.CampaignTypes = Enum.GetValues(typeof(CampaignType))
+                    .Cast<CampaignType>()
+                    .Select(e => new SelectListItem
+                    {
+                        Value = e.ToString(),
+                        Text = e.ToString()
+                    }).ToList();
+
+                ViewBag.Segments = Enum.GetValues(typeof(Segment))
+                    .Cast<Segment>()
+                    .Select(e => new SelectListItem
+                    {
+                        Value = e.ToString(),
+                        Text = e.ToString()
+                    }).ToList();
+
+                return View(campaign);
+            }
+
+            try
             {
                 _campaignService.TAdd(campaign);
                 return RedirectToAction(nameof(Index));
             }
+            catch (Exception ex)
+            {
+                // Hata durumunda logla ve kullanıcıya göster
+                ModelState.AddModelError("", $"Kampanya eklenirken bir hata oluştu: {ex.Message}");
 
-            ViewBag.CampaignTypes = Enum.GetValues(typeof(CampaignType))
-                .Cast<CampaignType>()
-                .Select(e => new SelectListItem
-                {
-                    Value = e.ToString(),
-                    Text = e.ToString()
-                }).ToList();
+                ViewBag.CampaignTypes = Enum.GetValues(typeof(CampaignType))
+                    .Cast<CampaignType>()
+                    .Select(e => new SelectListItem
+                    {
+                        Value = e.ToString(),
+                        Text = e.ToString()
+                    }).ToList();
 
-            ViewBag.Segments = Enum.GetValues(typeof(Segment))
-                .Cast<Segment>()
-                .Select(e => new SelectListItem
-                {
-                    Value = e.ToString(),
-                    Text = e.ToString()
-                }).ToList();
+                ViewBag.Segments = Enum.GetValues(typeof(Segment))
+                    .Cast<Segment>()
+                    .Select(e => new SelectListItem
+                    {
+                        Value = e.ToString(),
+                        Text = e.ToString()
+                    }).ToList();
 
-            return View(campaign);
+                return View(campaign);
+            }
         }
 
         public IActionResult Edit(int id)
